@@ -70,6 +70,7 @@ function init() {
             return;
           }
           board[row][col] = player;
+
           if (player == 1) {
             imgSrc = "../media/circle.png";
             player = 2;
@@ -83,6 +84,7 @@ function init() {
           document.getElementById("turn").innerHTML = `Player ${player}'s turn`;
         }
 
+        console.log(gameOn);
         if (!gameOn) {
           outputResults();
         }
@@ -93,3 +95,8 @@ function init() {
 }
 
 init();
+
+//add click listener to restart button
+document.getElementById("restart-btn").addEventListener("click", function () {
+  location.reload();
+});
