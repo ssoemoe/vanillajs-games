@@ -66,6 +66,9 @@ function init() {
         let imgSrc = "";
         let turnDescription = ""
         if (gameOn) {
+          if (board[row][col] !== 0) {
+            return;
+          }
           board[row][col] = player;
           if (player == 1) {
             imgSrc = "../media/circle.png";
