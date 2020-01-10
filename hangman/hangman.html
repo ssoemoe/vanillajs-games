@@ -1,32 +1,57 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>
-        Hangman
+      Hangman
     </title>
     <style>
-        #hangman-area {
-            text-align: center;
-        }
+      #hangman {
+        border: 1px solid black;
+      }
+      #hangman-area {
+        text-align: center;
+      }
 
-        #game-details {
-            text-align: center;
-        }
+      #game-details {
+        text-align: center;
+      }
+
+      #leaderboard {
+        margin-left: 300px;
+      }
+
+      #play-btn {
+        color: white;
+        background-color: green;
+        border-radius: 5px;
+        font-size: 20px;
+      }
+
+      .alphabetBtn {
+        border-radius: 20px;
+        background-color: white;
+        color: blue;
+        border: 1px solid black;
+        margin: 5px;
+        font-size: 20px;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="hangman-area">
-        <h1>Hangman</h1>
-        <canvas id="hangman" height="300" width="300">
-
-        </canvas>
+      <h1>Hangman</h1>
+      <table id="leaderboard" border="1">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+      </table>
+      <canvas id="hangman" height="300" width="300"> </canvas>
     </div>
-    <div id="game-details">
-        <h3>Set the game word: <input type="text"><button id="game-word-submit">Submit</button></h3>
-    </div>
+    <div id="game-details"></div>
     <script src="./hangman.js"></script>
-</body>
-
+  </body>
 </html>
