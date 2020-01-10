@@ -3,6 +3,7 @@
 function init() {
   let players = [];
   let wrongWords = [];
+  let correctWords = [];
   let gameword = "";
   let current_player = "";
   let playerWon = false;
@@ -63,14 +64,18 @@ function init() {
   };
 
   let resetGame = _ => {
+    wrongWords = [];
+    correctWords = [];
     gameword = "";
     current_player = "";
     playerWon = false;
-    wrongWords = [];
-    clearHangmanArea();
   };
 
   let displayInputs = _ => {
+    // show the hangman initially
+    for (let i = 0; i < 10; i++) {
+      drawHangman(i);
+    }
     let inputHTML = `
       <h3>
         Game Word:
@@ -83,9 +88,96 @@ function init() {
       <button id="play-btn">Play</button>
       `;
     document.getElementById("game-details").innerHTML = inputHTML;
+
+    let playBtn = document.getElementById("play-btn");
+    playBtn.addEventListener("click", function() {
+      gameword = document.getElementById("gameword").value;
+      current_player = document.getElementById("playername").value.trim();
+
+      if (gameword.trim() === "" || current_player.trim() === "") {
+        alert("Gameword or playername cannot be empty");
+        return;
+      }
+      clearHangmanArea();
+      gameword = gameword.toUpperCase();
+      console.log(gameword);
+      displayGameboard();
+      let player = players.find(p => p.name === current_player);
+      if (!player) {
+        players.push({
+          name: current_player,
+          score: 0,
+          numGames: 1,
+          word: gameword
+        });
+      } else {
+        player.numGames++;
+        player.word = gameword;
+      }
+    });
   };
 
-  let alphabetBtnClick = alphabet => {};
+  let finalizeGame = _ => {
+    let leaderboardBody = document
+      .getElementById("leaderboard")
+      .getElementsByTagName("tbody")[0];
+    let player = players.find(p => p.name === current_player);
+    let gameDetails = document.getElementById("game-details");
+    gameDetails.innerHTML = "";
+    if (playerWon) {
+      player.score++;
+      gameDetails.innerHTML = `<strong>${current_player}</strong> won!<br>`;
+    } else {
+      gameDetails.innerHTML = `<strong>${current_player}</strong> lost!<br>`;
+    }
+    gameDetails.innerHTML += `Current score of ${player.name}: ${player.score}<br>`;
+    gameDetails.innerHTML += `<button id="restart-btn">New Game</button>`;
+    document
+      .getElementById("restart-btn")
+      .addEventListener("click", function() {
+        displayInputs();
+      });
+    // draw leaderboard
+    leaderboardBody.innerHTML = "";
+    for (let p of players) {
+      leaderboardBody.innerHTML += `<tr><td>${p.name}</td><td>${p.score}</td>
+      <td>${p.numGames}</td><td>${p.word}</td></tr>`;
+    }
+
+    resetGame();
+  };
+
+  let alphabetBtnClick = alphabet => {
+    let correctWordsIncludes = correctWords.includes(alphabet);
+    if (gameword.includes(alphabet) && !correctWordsIncludes) {
+      for (let i = 0; i < gameword.length; i++) {
+        if (gameword[i] === alphabet) {
+          let missingWord = document.getElementById(`missing-word-${i}`);
+          missingWord.innerText = alphabet;
+          correctWords.push(alphabet);
+        }
+      }
+      document.getElementById(`id-${alphabet}`).style.backgroundColor = "green";
+      document.getElementById(`id-${alphabet}`).style.color = "white";
+      // checks if the player wins
+      if (correctWords.length === gameword.length) {
+        playerWon = true;
+        finalizeGame();
+      }
+    } else if (!correctWordsIncludes) {
+      if (wrongWords.includes(alphabet)) {
+        return;
+      }
+      wrongWords.push(alphabet);
+      drawHangman(wrongWords.length - 1);
+      document.getElementById(`id-${alphabet}`).style.backgroundColor = "red";
+      document.getElementById(`id-${alphabet}`).style.color = "white";
+      if (wrongWords.length === 10) {
+        playerWon = false;
+        finalizeGame();
+      }
+    }
+  };
 
   document.onkeypress = event => {
     // checks if the keycode is alphabet and gameword is already set
@@ -97,21 +189,35 @@ function init() {
   let displayGameboard = _ => {
     let gameDetails = document.getElementById("game-details");
     gameDetails.innerHTML = "";
+
+    // set up the game word
+    let gamewordDiv = document.createElement("div");
+    for (let i = 0; i < gameword.length; i++) {
+      let missingWord = document.createElement("span");
+      missingWord.id = `missing-word-${i}`;
+      missingWord.className = "missingWord";
+      missingWord.innerText = "-";
+      gamewordDiv.appendChild(missingWord);
+    }
+
+    gameDetails.appendChild(gamewordDiv);
+
+    // set up alphabet keyboard
     let alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let gameboard = document.createElement("div");
     gameboard.id = "gameboard";
     for (let i = 0; i < alphabets.length; i += 5) {
       let newBtnDiv = document.createElement("div");
-      for (let j = i; j < i + 4; j++) {
+      for (let j = i; j < i + 5; j++) {
         if (!alphabets[j]) {
           break;
         }
         let alphabetBtn = document.createElement("button");
         alphabetBtn.innerText = alphabets[j];
         alphabetBtn.className = "alphabetBtn";
-        alphabetBtn.id = alphabets[j];
+        alphabetBtn.id = `id-${alphabets[j].toUpperCase()}`;
         alphabetBtn.addEventListener("click", function() {
-          alphabetBtnClick(alphabets[j]);
+          alphabetBtnClick(alphabets[j].toUpperCase());
         });
         newBtnDiv.appendChild(alphabetBtn);
       }
@@ -121,26 +227,6 @@ function init() {
   };
 
   displayInputs();
-  // show the hangman initially
-  for (let i = 0; i < 10; i++) {
-    drawHangman(i);
-  }
-
-  // add event listeners
-  let playBtn = document.getElementById("play-btn");
-  playBtn.addEventListener("click", function() {
-    gameword = document.getElementById("gameword").value;
-    current_player = document.getElementById("playername").value;
-
-    if (gameword.trim() === "" || current_player.trim() === "") {
-      alert("Gameword or playername cannot be empty");
-      return;
-    }
-    clearHangmanArea();
-    displayGameboard();
-    gameword = gameword.toUpperCase();
-    console.log(gameword);
-  });
 }
 
 init();

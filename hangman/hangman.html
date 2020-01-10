@@ -5,9 +5,13 @@
       Hangman
     </title>
     <style>
+      #left-side {
+        position: fixed;
+      }
       #hangman {
         border: 1px solid black;
       }
+
       #hangman-area {
         text-align: center;
       }
@@ -17,10 +21,18 @@
       }
 
       #leaderboard {
-        margin-left: 300px;
+        font-size: 18px;
+        border-collapse: collapse;
       }
 
-      #play-btn {
+      td,
+      th {
+        border: 1px solid black;
+        padding: 5px;
+      }
+
+      #play-btn,
+      #restart-btn {
         color: white;
         background-color: green;
         border-radius: 5px;
@@ -35,20 +47,31 @@
         margin: 5px;
         font-size: 20px;
       }
+
+      .missingWord {
+        font-size: 30px;
+        margin: 20px;
+      }
     </style>
   </head>
 
   <body>
-    <div id="hangman-area">
-      <h1>Hangman</h1>
-      <table id="leaderboard" border="1">
+    <div id="left-side">
+      <table id="leaderboard">
         <thead>
           <tr>
             <th>Player</th>
             <th>Score</th>
+            <th>Number of Games Played</th>
+            <th>Last Game Word</th>
           </tr>
         </thead>
+        <tbody></tbody>
       </table>
+    </div>
+
+    <div id="hangman-area">
+      <h1>Hangman</h1>
       <canvas id="hangman" height="300" width="300"> </canvas>
     </div>
     <div id="game-details"></div>
